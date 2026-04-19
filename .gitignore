@@ -205,3 +205,26 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# macOS
+.DS_Store
+
+# Claude Code
+.claude/
+
+# LaTeX build artifacts
+docs/*.aux
+docs/*.bbl
+docs/*.blg
+docs/*.log
+docs/*.out
+docs/*.toc
+docs/*.pdf
+docs/overleaf_package.zip
+
+# Generated figures and results
+docs/figures/
+results/
+
+# Large raw data files
+data/finra_ats/*.xlsx

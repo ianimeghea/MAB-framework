@@ -16,12 +16,25 @@ class UCB_BaselineAgent(Agent):
         self.values = [0.0] * n_arms
         self.total_steps = 0
         self.last_arm = None
+        # Randomise the initial exploration order across agents.
+        # This is a critical design choice for multi-agent experiments:
+        # without it, all agents pull arms in the same order (0,1,...,K-1),
+        # guaranteeing a collision at every exploration step and masking any
+        # diversification signal. With it, agents take different exploration
+        # paths, so subsequent specialisation (e.g. under zero_on_collision)
+        # is driven by collision feedback — not by this randomisation.
+        # The RQ2 result should be interpreted as: "given independent
+        # exploration paths, collision feedback alone is sufficient to drive
+        # venue separation." It is not a claim that UCB agents coordinate
+        # strategically in general.
+        self._explore_order = list(range(n_arms))
+        random.shuffle(self._explore_order)
 
     def choose_arm(self):
         self.total_steps += 1
 
         #ensure we try each arm at least once
-        for arm in range(self.n_arms):
+        for arm in self._explore_order:
             if self.counts[arm] == 0:
                 self.last_arm = arm
                 return arm
