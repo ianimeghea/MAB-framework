@@ -228,3 +228,6 @@ results/
 
 # Large raw data files
 data/finra_ats/*.xlsx
+
+# Generated report script
+multi_agent_bandits/experiments/generate_report.py
