@@ -32,9 +32,10 @@ class ThompsonSamplingAgent(Agent):
         self.prior_var = prior_var
         self.counts = [0] * n_arms
         self.values = [0.0] * n_arms      # running posterior mean
-        self._explore_order = list(range(n_arms))
-        random.shuffle(self._explore_order)
         self.last_arm = None
+        # Note: no explicit explore_order needed. With all arms sharing the
+        # same prior N(0, 100), each agent independently samples a different
+        # highest arm on step 1, achieving symmetry breaking automatically.
 
     def choose_arm(self):
         samples = []

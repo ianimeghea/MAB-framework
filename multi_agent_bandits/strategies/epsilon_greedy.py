@@ -2,14 +2,16 @@ import random
 from multi_agent_bandits.core.agent import Agent
 
 class EpsilonGreedyAgent(Agent):
-    def __init__(self, n_arms, epsilon=0.1, name = None):
+    def __init__(self, n_arms, epsilon=0.1, name=None):
         super().__init__(n_arms, name=name)
         self.epsilon = epsilon
-
-        #track estimates and counts
         self.counts = [0] * n_arms
         self.values = [0.0] * n_arms
         self.last_arm = None
+        # Note: epsilon=0 (pure greedy) is pathological under zero_on_collision
+        # with multiple agents: all agents tie on arm 0, always collide, always
+        # get 0, values never change. This is intentional — greedy is included
+        # as a lower-bound baseline to show the cost of zero exploration.
 
     def choose_arm(self):
         if random.random() < self.epsilon:

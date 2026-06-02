@@ -85,22 +85,22 @@ def welfare_loss_from_collisions(choices_log, rewards_log, oracle_arm_mean, n_ag
     """
     Estimated welfare destroyed by collisions under zero_on_collision.
 
-    When agents collide and all get 0, the 'lost' welfare is approximately
-    n_colliding_agents * oracle_arm_mean for that step. This gives a measure
-    of the social cost of uncoordinated herding.
+    Compares realized welfare against the single-agent oracle (n_agents *
+    oracle_arm_mean) as the upper bound. The gap is the welfare that could
+    have been captured if all agents had been on the best arm with no
+    collision cost — a theoretical maximum, not a practically achievable
+    counterfactual (in practice, agents on the same arm with pro-rata would
+    split the reward; this metric assumes perfect coordination at full value).
 
-    oracle_arm_mean: the mean of the best arm (upper bound on per-step welfare).
+    Use as a directional upper-bound on collision cost, not a precise
+    estimate of recoverable welfare.
+
+    oracle_arm_mean: the mean of the best arm.
     Returns total estimated welfare loss over the run.
     """
     total_loss = 0.0
-    for t, choices in enumerate(choices_log):
-        arm_counts = {}
-        for arm in choices:
-            arm_counts[arm] = arm_counts.get(arm, 0) + 1
+    oracle_per_step = n_agents * oracle_arm_mean
+    for t, _ in enumerate(choices_log):
         realized = sum(rewards_log[t])
-        # Number of agents who collided and got nothing
-        colliders = sum(count for count in arm_counts.values() if count > 1)
-        # Approximate what they would have gotten with perfect coordination
-        counterfactual = colliders * oracle_arm_mean
-        total_loss += max(0.0, counterfactual - realized)
+        total_loss += max(0.0, oracle_per_step - realized)
     return total_loss
